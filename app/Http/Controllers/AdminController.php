@@ -63,8 +63,6 @@ class AdminController extends Controller
         $age = $person_decode->age;
         $point = $person_decode->point;
 
-        
-
         $res1 = sessiontest::create([
             'nickname' => $nickname,
             'age' => $age,
