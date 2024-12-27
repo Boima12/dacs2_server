@@ -20,3 +20,5 @@ Route::post('/account/navibar', [AccountController::class, 'account_navibar'])->
 Route::post('/account/dangNhap', [AccountController::class, 'account_dangNhap'])->name('account_dangNhap') ->withoutMiddleware(['web']);
 Route::post('/account/dangKy', [AccountController::class, 'account_dangKy'])->name('account_dangKy') ->withoutMiddleware(['web']);
 Route::post('/account/registering', [AccountController::class, 'account_registering'])->name('account_registering') ->withoutMiddleware(['web']);
+Route::post('/account/thongTinChung', [AccountController::class, 'account_thongTinChung'])->name('account_thongTinChung') ->withoutMiddleware(['web']);
+Route::post('/account/doiMatKhau', [AccountController::class, 'account_doiMatKhau'])->name('account_doiMatKhau') ->withoutMiddleware(['web']);

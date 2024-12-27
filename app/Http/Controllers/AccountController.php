@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\accounts;
+
 
 class AccountController extends Controller
 {
@@ -177,5 +179,85 @@ class AccountController extends Controller
             'success' => true,
             'message' => 'Account updated successfully!',
         ], 200);
+    }
+
+    public function account_thongTinChung(Request $request)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'accountName' => 'required|string',
+            'fullName' => 'nullable|string',
+            'accountAbout' => 'nullable|string',
+            'accountSkills' => 'nullable|string',
+            'accountCurrentJob' => 'nullable|string',
+            'accountDesiredRoles' => 'nullable|string',
+            'accountPreferedLocation' => 'nullable|string',
+            'accountSalary' => 'nullable|string',
+            'accountPhone' => 'nullable|string',
+            'accountEmail' => 'nullable|email',
+            'accountAddress' => 'nullable|string',
+            'accountLink_portfolio' => 'nullable|string',
+            'accountLink_linkedin' => 'nullable|string',
+            'accountLink_twitter' => 'nullable|string',
+            'accountLink_github' => 'nullable|string',
+            'accountLink_facebook' => 'nullable|string',
+        ]);
+    
+        // Attempt to find and update the account by account_name
+        $account = DB::table('accounts') // Adjust 'accounts' to your actual table name
+            ->where('accountName', $validatedData['accountName'])
+            ->update([
+                'fullName' => $validatedData['fullName'],
+                'accountAbout' => $validatedData['accountAbout'],
+                'accountSkills' => $validatedData['accountSkills'],
+                'accountCurrentJob' => $validatedData['accountCurrentJob'],
+                'accountDesiredRoles' => $validatedData['accountDesiredRoles'],
+                'accountPreferedLocation' => $validatedData['accountPreferedLocation'],
+                'accountSalary' => $validatedData['accountSalary'],
+                'accountPhone' => $validatedData['accountPhone'],
+                'accountEmail' => $validatedData['accountEmail'],
+                'accountAddress' => $validatedData['accountAddress'],
+                'accountLink_portfolio' => $validatedData['accountLink_portfolio'],
+                'accountLink_linkedin' => $validatedData['accountLink_linkedin'],
+                'accountLink_twitter' => $validatedData['accountLink_twitter'],
+                'accountLink_github' => $validatedData['accountLink_github'],
+                'accountLink_facebook' => $validatedData['accountLink_facebook'],
+            ]);
+    
+        if ($account) {
+            return response()->json(['message' => 'Account updated successfully!'], 200);
+        } else {
+            return response()->json(['message' => 'Account not found or no changes made.'], 404);
+        }
+    }
+
+    public function account_doiMatKhau(Request $request)
+    {
+        // Step 1: Validate the input
+        $validatedData = $request->validate([
+            'accountName' => 'required|string',
+            'currentPassword' => 'required|string',
+            'newPassword' => 'required|string|min:6', // Ensure the new password is secure
+        ]);
+    
+        // Step 2: Retrieve the account from the database
+        $account = DB::table('accounts')->where('accountName', $validatedData['accountName'])->first();
+    
+        if (!$account) {
+            return response()->json(['message' => 'Tài khoản không tồn tại.'], 404);
+        }
+    
+        // Step 3: Check if the current password matches
+        if (!Hash::check($validatedData['currentPassword'], $account->accountPassword)) {
+            return response()->json(['message' => 'Mật khẩu hiện tại không đúng.'], 201);
+        }
+    
+        // Step 4: Update the password in the database
+        $hashedNewPassword = Hash::make($validatedData['newPassword']); // Hash the new password
+        DB::table('accounts')
+            ->where('accountName', $validatedData['accountName'])
+            ->update(['accountPassword' => $hashedNewPassword]);
+    
+        return response()->json(['message' => 'Mật khẩu đã được cập nhật thành công.'], 200);
     }
 }
